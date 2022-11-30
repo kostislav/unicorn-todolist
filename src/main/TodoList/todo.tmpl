@@ -1,0 +1,12 @@
+<html
+    <head
+    <body
+        <h1 'TODO List'
+        foreach(items, item =>
+            <div
+                <p item.name
+                form([], action('markComplete', item.id), f =>
+                    f.submitButton('Mark Complete')
+        form([], action('add'), f =>
+            f.inputs(form)
+            f.submitButton('Save Item')
