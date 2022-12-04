@@ -31,7 +31,7 @@ class Router {
     /**
      * @throws HttpException
      */
-    public function handle(string $method, string $url): Response {
+    public function handle(string $method, string $url): RouteMatch {
         $url = self::appendSlashIfMissing($url);
         foreach ($this->routes as $baseUrl => $controllerName) {
             if ($url == $baseUrl || str_starts_with($url, $baseUrl)) {
@@ -44,7 +44,7 @@ class Router {
                             // TODO path variables
                             if ($getAttribute[0]->newInstance()->url == $restOfUrl) {
                                 // TODO params
-                                return $method->invoke($this->container->get($controllerName));
+                                return new RouteMatch($controllerName, $method);
                             }
                         }
                     }

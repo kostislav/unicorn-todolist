@@ -10,6 +10,7 @@ use Unicorn\Routing\Router;
 
 class App {
     private function __construct(
+        private readonly Container $container,
         private readonly Router $router
     ) {
     }
@@ -33,6 +34,7 @@ class App {
         $container = Container::create($containerConfigClassName);
         $router = Router::create($container);
         return new self(
+            $container,
             $router
         );
     }
@@ -41,6 +43,6 @@ class App {
      * @throws Http\Exception\HttpException
      */
     public function handle(string $method, string $url): Response {
-        return $this->router->handle($method, $url);
+        return $this->router->handle($method, $url)->invoke($this->container);
     }
 }
