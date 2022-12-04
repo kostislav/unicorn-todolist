@@ -3,6 +3,7 @@
 namespace Unicorn\Container;
 
 use Attribute;
+use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -12,9 +13,16 @@ class Container {
     private array $componentInitializers = [];
     private array $components = [];
     private array $containerConfigInstances = [];
+    private YamlConfigFileReader $yamlConfigFileReader;
 
-    public static function create(string $containerConfigClassName): self {
-        $container = new self();
+    private function __construct(
+        private string $baseDir
+    ) {
+        $this->yamlConfigFileReader = new YamlConfigFileReader();
+    }
+
+    public static function create(string $containerConfigClassName, string $baseDir): self {
+        $container = new self($baseDir);
         $container->processConfigClass($containerConfigClassName);
         return $container;
     }
@@ -50,8 +58,22 @@ class Container {
 
     private function getContainerConfigInstance(string $containerConfigClassName) {
         if (!array_key_exists($containerConfigClassName, $this->containerConfigInstances)) {
-            // TODO constructor parameters
-            $this->containerConfigInstances[$containerConfigClassName] = new $containerConfigClassName();
+            $containerConfigClass = new ReflectionClass($containerConfigClassName);
+            $constructor = $containerConfigClass->getConstructor();
+            if ($constructor != null) {
+                $parameters = [];
+                foreach ($constructor->getParameters() as $parameter) {
+                    $configFileAttribute = $parameter->getAttributes(ConfigFile::class);
+                    if (!empty($configFileAttribute)) {
+                        $parameters[] = $this->yamlConfigFileReader->parse($this->baseDir . '/config/' . $configFileAttribute[0]->newInstance()->relativePath, $parameter->getType());
+                    } else {
+                        throw new InvalidArgumentException("No #[ConfigFile] attribute found on constructor parameter of " . $containerConfigClassName);
+                    }
+                    return $containerConfigClass->newInstanceArgs($parameters);
+                }
+            } else {
+                $this->containerConfigInstances[$containerConfigClassName] = new $containerConfigClassName();
+            }
         }
         return $this->containerConfigInstances[$containerConfigClassName];
     }

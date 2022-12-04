@@ -18,7 +18,7 @@ class App {
 
     public static function handleGlobalRequest(string $containerConfigClassName): void {
         try {
-            $app = self::create($containerConfigClassName);
+            $app = self::create($containerConfigClassName, realpath($_SERVER['DOCUMENT_ROOT'] . '/..'));
             $app->handleAndSend($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
         } catch (HttpException $e) {
             http_response_code($e->statusCode);
@@ -30,8 +30,8 @@ class App {
         }
     }
 
-    public static function create(string $containerConfigClassName): self {
-        $container = Container::create($containerConfigClassName);
+    public static function create(string $containerConfigClassName, string $baseDir): self {
+        $container = Container::create($containerConfigClassName, $baseDir);
         $router = Router::create($container);
         return new self(
             $container,

@@ -11,6 +11,7 @@
     }
   },
   "require": {
+    "symfony/yaml": "^v6.2.0",
     "twig/twig": "^v3.4.3"
   }
 }

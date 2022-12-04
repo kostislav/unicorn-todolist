@@ -4,6 +4,11 @@
         <title>TODO List</title>
     </head>
     <body>
-        <p>Hello {{ who }}!</p>
+        <h1>TODO List</h1>
+        {% for item in items %}
+            <div>
+                <p>{{ item.name }}</p>
+            </div>
+        {% endfor %}
     </body>
 </html>

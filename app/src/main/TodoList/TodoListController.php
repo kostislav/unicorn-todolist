@@ -16,8 +16,7 @@ class TodoListController {
 
     #[GET('/')]
     public function index(): Response {
-        return Response::template('todo', ['who' => 'word']);
-//        return $this->showForm(new TodoForm());
+        return $this->showForm(new TodoForm());
     }
 
 //    #[POST('/')]
@@ -36,10 +35,10 @@ class TodoListController {
 //        return Response::redirect('index');
 //    }
 //
-//    private function showForm(TodoForm $form): Response {
-//        return Response::template('todo', [
-//            'form' => $form,
-//            'items' => $this->todoListService->getAllUnfinished()
-//        ]);
-//    }
+    private function showForm(TodoForm $form): Response {
+        return Response::template('todo', [
+            'form' => $form,
+            'items' => $this->todoListService->getAllUnfinished()
+        ]);
+    }
 }
