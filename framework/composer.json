@@ -1,0 +1,13 @@
+{
+  "name": "unicorn/framework",
+  "config": {
+    "platform": {
+      "php": "8.1"
+    }
+  },
+  "autoload": {
+    "psr-0": {
+      "": "src/main/"
+    }
+  }
+}

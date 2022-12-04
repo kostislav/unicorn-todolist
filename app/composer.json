@@ -9,7 +9,13 @@
       "": "src/main/"
     }
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../framework"
+    }
+  ],
   "require": {
-    "unicorn/framework": "^42"
+    "unicorn/framework": "@dev"
   }
 }
