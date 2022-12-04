@@ -4,6 +4,8 @@ namespace Unicorn\Routing;
 
 use ReflectionClass;
 use Unicorn\Container\Container;
+use Unicorn\Http\Exception\HttpException;
+use Unicorn\Http\Exception\NotFoundException;
 use Unicorn\Http\Response;
 
 class Router {
@@ -26,6 +28,9 @@ class Router {
         );
     }
 
+    /**
+     * @throws HttpException
+     */
     public function handle(string $method, string $url): Response {
         $url = self::appendSlashIfMissing($url);
         foreach ($this->routes as $baseUrl => $controllerName) {
@@ -48,7 +53,7 @@ class Router {
                 // TODO the rest
             }
         }
-        // TODO 404
+        throw new NotFoundException();
     }
 
     private static function appendSlashIfMissing(string $input): string {
