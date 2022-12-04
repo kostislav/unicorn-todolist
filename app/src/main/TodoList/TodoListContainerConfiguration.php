@@ -2,13 +2,13 @@
 
 namespace TodoList;
 
-use Unicorn\Routing\Controller;
-use Unicorn\Container\Import;
-use Unicorn\Db\DefaultPdoDatabaseConfig;
 use Unicorn\Db\SqlDatabase;
-use Unicorn\Template\Twig\TwigTemplateContainerConfig;
+use Unicorn\Db\UsePdo;
+use Unicorn\Routing\Controller;
+use Unicorn\Template\Twig\UseTwig;
 
-#[Import([DefaultPdoDatabaseConfig::class, TwigTemplateContainerConfig::class])]
+#[UseTwig]
+#[UsePdo]
 class TodoListContainerConfiguration {
     public function todoListService(SqlDatabase $database): TodoListService {
         return new TodoListService($database);

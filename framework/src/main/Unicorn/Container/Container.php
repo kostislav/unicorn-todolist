@@ -2,6 +2,7 @@
 
 namespace Unicorn\Container;
 
+use Attribute;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -60,10 +61,19 @@ class Container {
         foreach ($containerConfigClass->getMethods() as $method) {
             $this->componentInitializers[$method->name] = $method;
         }
-        // TODO check if already processed
-        foreach ($containerConfigClass->getAttributes(Import::class) as $import) {
-            foreach ($import->newInstance()->containerConfigClassNames as $className) {
-                $this->processConfigClass($className);
+        self::processImports($containerConfigClass);
+    }
+
+    // TODO check if already processed
+    private function processImports(ReflectionClass $configClass) {
+        foreach ($configClass->getAttributes() as $attribute) {
+            $attributeType = $attribute->getName();
+            if ($attributeType == Import::class) {
+                foreach ($attribute->newInstance()->containerConfigClassNames as $className) {
+                    $this->processConfigClass($className);
+                }
+            } else if ($attributeType != Attribute::class) {
+                self::processImports(new ReflectionClass($attributeType));
             }
         }
     }
