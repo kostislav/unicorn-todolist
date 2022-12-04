@@ -10,7 +10,6 @@ use Unicorn\Http\Response;
 
 class Router {
     private function __construct(
-        private readonly Container $container,
         private readonly array $routes
     ) {
     }
@@ -19,11 +18,28 @@ class Router {
         $routes = [];
         foreach ($container->getComponentsWithAttribute(Controller::class) as $controllerName => $attributes) {
             $baseUrl = $attributes[0]->newInstance()->baseUrl;
-            $routes[self::appendSlashIfMissing($baseUrl)] = $controllerName;
+            $controllerClass = new ReflectionClass($container->getComponentType($controllerName));
+            $methods = [];
+            foreach ($controllerClass->getMethods() as $method) {
+                foreach ($method->getAttributes() as $attribute) {
+                    $attributeType = new ReflectionClass($attribute->getName());
+                    if ($attributeType->implementsInterface(RouteAttribute::class)) {
+                        $attributeInstance = $attribute->newInstance();
+                        $httpMethod = $attributeInstance->getMethod();
+                        $methods[] = new AnalyzedControllerMethod($method, $httpMethod, $attributeInstance->getUrl());
+                    }
+                }
+            }
+
+            $routes[self::appendSlashIfMissing($baseUrl)] = new AnalyzedController(
+                $controllerName,
+                dirname($controllerClass->getFileName()),
+                $methods
+            );
         }
+
         uksort($routes, fn($a, $b) => strlen($b) - strlen($a)); // longest first
         return new self(
-            $container,
             $routes
         );
     }
@@ -33,27 +49,10 @@ class Router {
      */
     public function handle(string $method, string $url): RouteMatch {
         $url = self::appendSlashIfMissing($url);
-        foreach ($this->routes as $baseUrl => $controllerName) {
+        foreach ($this->routes as $baseUrl => $analyzedController) {
             if ($url == $baseUrl || str_starts_with($url, $baseUrl)) {
                 $restOfUrl = self::appendSlashIfMissing(substr($url, strlen($baseUrl)));
-                $controllerClass = new ReflectionClass($this->container->getComponentType($controllerName));
-                if ($method == 'GET') {
-                    foreach ($controllerClass->getMethods() as $method) {
-                        $getAttribute = $method->getAttributes(GET::class);
-                        if (!empty($getAttribute)) {
-                            // TODO path variables
-                            if ($getAttribute[0]->newInstance()->url == $restOfUrl) {
-                                // TODO params
-                                return new RouteMatch(
-                                    $controllerName,
-                                    dirname($controllerClass->getFileName()),
-                                    $method
-                                );
-                            }
-                        }
-                    }
-                }
-                // TODO the rest
+                return $analyzedController->match($method, $restOfUrl);
             }
         }
         throw new NotFoundException();
