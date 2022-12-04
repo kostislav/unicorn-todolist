@@ -43,6 +43,10 @@ class Container {
         return $result;
     }
 
+    public function getComponentType(string $name): string {
+        return $this->componentInitializers[$name]->getReturnType()->getName();
+    }
+
     private function getContainerConfigInstance(string $containerConfigClassName) {
         if (!array_key_exists($containerConfigClassName, $this->containerConfigInstances)) {
             // TODO constructor parameters

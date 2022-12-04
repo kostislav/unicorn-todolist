@@ -36,8 +36,7 @@ class Router {
         foreach ($this->routes as $baseUrl => $controllerName) {
             if ($url == $baseUrl || str_starts_with($url, $baseUrl)) {
                 $restOfUrl = self::appendSlashIfMissing(substr($url, strlen($baseUrl)));
-                $controller = $this->container->get($controllerName);
-                $controllerClass = new ReflectionClass($controller);
+                $controllerClass = new ReflectionClass($this->container->getComponentType($controllerName));
                 if ($method == 'GET') {
                     foreach ($controllerClass->getMethods() as $method) {
                         $getAttribute = $method->getAttributes(GET::class);
@@ -45,7 +44,7 @@ class Router {
                             // TODO path variables
                             if ($getAttribute[0]->newInstance()->url == $restOfUrl) {
                                 // TODO params
-                                return $method->invoke($controller);
+                                return $method->invoke($this->container->get($controllerName));
                             }
                         }
                     }
