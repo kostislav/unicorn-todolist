@@ -12,7 +12,7 @@ class Response {
         return new self($text);
     }
 
-    public function renderGlobal(): void {
+    public function send(): void {
         echo $this->content;
     }
 }

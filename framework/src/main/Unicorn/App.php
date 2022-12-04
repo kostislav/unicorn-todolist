@@ -18,8 +18,7 @@ class App {
     public static function handleGlobalRequest(string $containerConfigClassName): void {
         try {
             $app = self::create($containerConfigClassName);
-            $response = $app->handle($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-            $response->renderGlobal();
+            $app->handleAndSend($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
         } catch (HttpException $e) {
             http_response_code($e->statusCode);
             echo $e->statusCode, '<br />';
@@ -42,7 +41,7 @@ class App {
     /**
      * @throws Http\Exception\HttpException
      */
-    public function handle(string $method, string $url): Response {
-        return $this->router->handle($method, $url)->invoke($this->container);
+    public function handleAndSend(string $method, string $url): void {
+        $this->router->handle($method, $url)->invoke($this->container)->send();
     }
 }
