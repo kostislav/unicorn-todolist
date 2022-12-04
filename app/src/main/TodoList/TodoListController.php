@@ -16,7 +16,7 @@ class TodoListController {
 
     #[GET('/')]
     public function index(): Response {
-        return Response::plain("Hello world!");
+        return Response::template('todo', ['who' => 'word']);
 //        return $this->showForm(new TodoForm());
     }
 

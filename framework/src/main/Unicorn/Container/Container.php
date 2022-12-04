@@ -62,7 +62,9 @@ class Container {
         }
         // TODO check if already processed
         foreach ($containerConfigClass->getAttributes(Import::class) as $import) {
-            $this->processConfigClass($import->newInstance()->containerConfigClassName);
+            foreach ($import->newInstance()->containerConfigClassNames as $className) {
+                $this->processConfigClass($className);
+            }
         }
     }
 }

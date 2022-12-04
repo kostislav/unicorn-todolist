@@ -7,6 +7,7 @@ use Unicorn\Container\Container;
 use Unicorn\Http\Exception\HttpException;
 use Unicorn\Http\Response;
 use Unicorn\Routing\Router;
+use Unicorn\Template\LazyTemplateEngine;
 
 class App {
     private function __construct(
@@ -42,6 +43,11 @@ class App {
      * @throws Http\Exception\HttpException
      */
     public function handleAndSend(string $method, string $url): void {
-        $this->router->handle($method, $url)->invoke($this->container)->send();
+        $routeMatch = $this->router->handle($method, $url);
+        $response = $routeMatch->invoke($this->container);
+        $response->send(
+            new LazyTemplateEngine($this->container),
+            $routeMatch->controllerDir
+        );
     }
 }

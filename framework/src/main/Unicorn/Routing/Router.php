@@ -44,7 +44,11 @@ class Router {
                             // TODO path variables
                             if ($getAttribute[0]->newInstance()->url == $restOfUrl) {
                                 // TODO params
-                                return new RouteMatch($controllerName, $method);
+                                return new RouteMatch(
+                                    $controllerName,
+                                    dirname($controllerClass->getFileName()),
+                                    $method
+                                );
                             }
                         }
                     }

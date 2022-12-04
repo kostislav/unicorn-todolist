@@ -9,5 +9,8 @@
     "psr-0": {
       "": "src/main/"
     }
+  },
+  "require": {
+    "twig/twig": "^v3.4.3"
   }
 }
