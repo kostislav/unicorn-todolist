@@ -25,7 +25,7 @@ class TodoListService {
             ],
             self::TABLE,
             [
-                self::IS_COMPLETE => true
+                self::IS_COMPLETE => false
             ]
         )
             ->map(fn($item) => new TodoItem($item[self::ID], $item[self::NAME]))
