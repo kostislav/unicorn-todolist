@@ -6,25 +6,25 @@ use Unicorn\Template\TemplateEngine;
 
 class Response {
     private function __construct(
-        private readonly ?string $content,
-        private readonly ?string $templateName,
-        private readonly ?array $templateData
+        private readonly ResponseContentRenderer $contentRenderer
     ) {
     }
 
-    public static function plain($text): self {
-        return new self($text, null, null);
+    public static function plain(string $text): self {
+        return new self(new PlainResponseContentRenderer($text));
     }
 
     public static function template(string $name, array $data = []): self {
-        return new self(null, $name, $data);
+        return new self(new TemplateResponseContentRenderer($name, $data));
+    }
+
+    public static function redirect(string $url) {
+        return new self(
+            new PlainResponseContentRenderer('')
+        );
     }
 
     public function send(TemplateEngine $templateEngine, string $controllerDir): void {
-        if ($this->content != null) {
-            echo $this->content;
-        } else {
-            $templateEngine->renderToStdOut($controllerDir, $this->templateName, $this->templateData);
-        }
+        $this->contentRenderer->renderToStdOut($templateEngine, $controllerDir);
     }
 }
