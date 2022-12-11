@@ -9,6 +9,7 @@ use Unicorn\Http\Exception\NotFoundException;
 use Unicorn\Http\Response;
 
 class Router {
+    /** @param AnalyzedController[] $routes */
     private function __construct(
         private readonly array $routes
     ) {

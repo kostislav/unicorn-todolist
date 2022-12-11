@@ -6,10 +6,10 @@ use Unicorn\Http\Exception\HttpException;
 use Unicorn\Http\Exception\NotFoundException;
 
 class AnalyzedController {
+    /** @param  AnalyzedControllerMethod[] $methods */
     public function __construct(
         private readonly string $componentName,
         private readonly string $controllerDir,
-        /** @var AnalyzedControllerMethod[] */
         private readonly array $methods
     ) {
     }
@@ -23,7 +23,7 @@ class AnalyzedController {
                 return new RouteMatch(
                     $this->componentName,
                     $this->controllerDir,
-                    $method->method
+                    $method
                 );
             }
         }
