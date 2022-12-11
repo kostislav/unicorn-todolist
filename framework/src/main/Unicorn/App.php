@@ -47,7 +47,9 @@ class App {
         $routeMatch = $this->router->handle($method, $url);
         $response = $routeMatch->invoke($this->container, $requestParams);
         $response->send(
+            $this->router,
             new LazyTemplateEngine($this->container),
+            $routeMatch->controllerName,
             $routeMatch->controllerDir
         );
     }

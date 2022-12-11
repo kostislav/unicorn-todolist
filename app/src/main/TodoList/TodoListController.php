@@ -23,7 +23,7 @@ class TodoListController {
     #[POST('/')]
     public function add(#[RequestParam] string $name): Response {
         $this->todoListService->create($name);
-        return Response::redirect('/');
+        return Response::redirect('index');
     }
 
 //    #[POST('/')]

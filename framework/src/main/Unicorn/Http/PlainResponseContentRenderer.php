@@ -11,7 +11,7 @@ class PlainResponseContentRenderer implements ResponseContentRenderer {
     ) {
     }
 
-    public function renderToStdOut(TemplateEngine $templateEngine, string $controllerDir) {
+    public function renderToStdOut(ReverseRouter $reverseRouter, TemplateEngine $templateEngine, string $controllerComponentName, string $controllerDir) {
         echo $this->body;
     }
 }

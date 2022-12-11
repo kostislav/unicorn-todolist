@@ -10,7 +10,7 @@ class LazyTemplateEngine implements TemplateEngine {
     ) {
     }
 
-    function renderToStdOut(string $baseDir, string $name, array $data): void {
-        $this->container->get('templateEngine')->renderToStdOut($baseDir, $name, $data);
+    function renderToStdOut(TemplateContext $templateContext, string $baseDir, string $name, array $data): void {
+        $this->container->get('templateEngine')->renderToStdOut($templateContext, $baseDir, $name, $data);
     }
 }

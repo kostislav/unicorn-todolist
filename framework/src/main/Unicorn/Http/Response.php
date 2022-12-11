@@ -2,9 +2,11 @@
 
 namespace Unicorn\Http;
 
+use Unicorn\Routing\ReverseRouter;
 use Unicorn\Template\TemplateEngine;
 
 class Response {
+    /** @param ResponseHeaderRenderer[] $headers */
     private function __construct(
         private readonly ResponseContentRenderer $contentRenderer,
         private readonly int $status = 200,
@@ -20,21 +22,21 @@ class Response {
         return new self(new TemplateResponseContentRenderer($name, $data));
     }
 
-    public static function redirect(string $url) {
+    public static function redirect(string $action) {
         return new self(
             new PlainResponseContentRenderer(''),
             status: 303,
             headers: [
-                'Location' => $url
+                new RedirectHeaderRenderer($action)
             ]
         );
     }
 
-    public function send(TemplateEngine $templateEngine, string $controllerDir): void {
+    public function send(ReverseRouter $reverseRouter, TemplateEngine $templateEngine, string $controllerComponentName, string $controllerDir): void {
         http_response_code($this->status);
-        foreach ($this->headers as $name => $value) {
-            header("{$name}: {$value}");
+        foreach ($this->headers as $header) {
+            $header->sendToOutput($reverseRouter, $controllerComponentName);
         }
-        $this->contentRenderer->renderToStdOut($templateEngine, $controllerDir);
+        $this->contentRenderer->renderToStdOut($reverseRouter, $templateEngine, $controllerComponentName, $controllerDir);
     }
 }

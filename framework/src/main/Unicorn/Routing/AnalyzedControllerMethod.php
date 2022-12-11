@@ -8,10 +8,14 @@ use Unicorn\Http\Response;
 class AnalyzedControllerMethod {
     public function __construct(
         private readonly ReflectionMethod $method,
-        private readonly string $httpMethod,
-        private readonly string $url,
+        public readonly string $httpMethod,
+        public readonly string $url,
         private readonly array $parameters
     ) {
+    }
+
+    public function getName(): string {
+        return $this->method->getName();
     }
 
     public function matches(string $httpMethod, string $url): bool {

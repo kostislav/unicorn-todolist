@@ -8,7 +8,7 @@ use Unicorn\Http\Response;
 
 class RouteMatch {
     public function __construct(
-        private readonly string $controllerName,
+        public readonly string $controllerName,
         public readonly string $controllerDir,
         private readonly AnalyzedControllerMethod $controllerMethod
     ) {

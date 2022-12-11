@@ -13,7 +13,7 @@ class TemplateResponseContentRenderer implements ResponseContentRenderer {
     ) {
     }
 
-    public function renderToStdOut(TemplateEngine $templateEngine, string $controllerDir) {
-        $templateEngine->renderToStdOut($controllerDir, $this->name, $this->data);
+    public function renderToStdOut(ReverseRouter $reverseRouter, TemplateEngine $templateEngine, string $controllerComponentName, string $controllerDir) {
+        $templateEngine->renderToStdOut(new TemplateContext($controllerComponentName, $reverseRouter), $controllerDir, $this->name, $this->data);
     }
 }

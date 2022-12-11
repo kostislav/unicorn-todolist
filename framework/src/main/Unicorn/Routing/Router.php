@@ -9,7 +9,7 @@ use Unicorn\Http\Exception\HttpException;
 use Unicorn\Http\Exception\NotFoundException;
 use Unicorn\Http\Response;
 
-class Router {
+class Router implements ReverseRouter {
     /** @param AnalyzedController[] $routes */
     private function __construct(
         private readonly array $routes
@@ -74,5 +74,14 @@ class Router {
         } else {
             return $input . '/';
         }
+    }
+
+    public function findAction(string $controllerComponentName, string $actionName): ActionRoute {
+        foreach ($this->routes as $baseUrl => $analyzedController) {
+            if ($analyzedController->componentName == $controllerComponentName) {
+                return $analyzedController->findUrl($actionName)->prefixedWith($baseUrl);
+            }
+        }
+        throw new InvalidArgumentException("No route for {$controllerComponentName}.{$actionName}");
     }
 }

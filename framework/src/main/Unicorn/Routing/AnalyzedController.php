@@ -2,13 +2,14 @@
 
 namespace Unicorn\Routing;
 
+use InvalidArgumentException;
 use Unicorn\Http\Exception\HttpException;
 use Unicorn\Http\Exception\NotFoundException;
 
 class AnalyzedController {
     /** @param  AnalyzedControllerMethod[] $methods */
     public function __construct(
-        private readonly string $componentName,
+        public readonly string $componentName,
         private readonly string $controllerDir,
         private readonly array $methods
     ) {
@@ -28,5 +29,14 @@ class AnalyzedController {
             }
         }
         throw new NotFoundException();
+    }
+
+    public function findUrl(string $methodName): ActionRoute {
+        foreach ($this->methods as $method) {
+            if ($method->getName() == $methodName) {
+                return new ActionRoute($method->url, $method->httpMethod);
+            }
+        }
+        throw new InvalidArgumentException("No method with name " . $methodName . ' in ' . $this->componentName);
     }
 }
