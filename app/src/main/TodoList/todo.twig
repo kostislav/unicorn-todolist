@@ -10,5 +10,14 @@
                 <p>{{ item.name }}</p>
             </div>
         {% endfor %}
+        <form action="/" method="POST">
+            <div>
+                <label for="form_name">New Todo Item</label>
+                <input id="form_name" name="name"/>
+            </div>
+            <div>
+                <button type="submit">Save Item</button>
+            </div>
+        </form>
     </body>
 </html>

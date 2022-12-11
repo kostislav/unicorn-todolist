@@ -9,7 +9,8 @@ class AnalyzedControllerMethod {
     public function __construct(
         private readonly ReflectionMethod $method,
         private readonly string $httpMethod,
-        private readonly string $url
+        private readonly string $url,
+        private readonly array $parameters
     ) {
     }
 
@@ -17,7 +18,12 @@ class AnalyzedControllerMethod {
         return $this->httpMethod == $httpMethod && $this->url == $url;
     }
 
-    public function invoke(mixed $controller): Response {
-        return $this->method->invoke($controller);
+    public function invoke(mixed $controller, array $requestParams): Response {
+        if (empty($this->parameters)) {
+            return $this->method->invoke($controller);
+        } else {
+            $arguments = array_map(fn($name) => $requestParams[$name] , $this->parameters);
+            return $this->method->invokeArgs($controller, $arguments);
+        }
     }
 }

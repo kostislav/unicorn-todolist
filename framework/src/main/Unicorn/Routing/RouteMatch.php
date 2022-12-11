@@ -14,7 +14,7 @@ class RouteMatch {
     ) {
     }
 
-    public function invoke(Container $container): Response {
-        return $this->controllerMethod->invoke($container->get($this->controllerName));
+    public function invoke(Container $container, array $requestParams): Response {
+        return $this->controllerMethod->invoke($container->get($this->controllerName), $requestParams);
     }
 }

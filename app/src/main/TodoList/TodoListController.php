@@ -2,11 +2,12 @@
 
 namespace TodoList;
 
-use Unicorn\Form\SubmittedForm;
+//use Unicorn\Form\SubmittedForm;
 use Unicorn\Routing\GET;
 use Unicorn\Routing\POST;
-use Unicorn\Routing\UrlParam;
+//use Unicorn\Routing\UrlParam;
 use Unicorn\Http\Response;
+use Unicorn\Routing\RequestParam;
 
 class TodoListController {
     public function __construct(
@@ -17,6 +18,12 @@ class TodoListController {
     #[GET('/')]
     public function index(): Response {
         return $this->showForm(new TodoForm());
+    }
+
+    #[POST('/')]
+    public function add(#[RequestParam] string $name): Response {
+        $this->todoListService->create($name);
+        return Response::redirect('/');
     }
 
 //    #[POST('/')]

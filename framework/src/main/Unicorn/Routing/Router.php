@@ -2,6 +2,7 @@
 
 namespace Unicorn\Routing;
 
+use InvalidArgumentException;
 use ReflectionClass;
 use Unicorn\Container\Container;
 use Unicorn\Http\Exception\HttpException;
@@ -27,7 +28,15 @@ class Router {
                     if ($attributeType->implementsInterface(RouteAttribute::class)) {
                         $attributeInstance = $attribute->newInstance();
                         $httpMethod = $attributeInstance->getMethod();
-                        $methods[] = new AnalyzedControllerMethod($method, $httpMethod, $attributeInstance->getUrl());
+                        $parameters = [];
+                        foreach ($method->getParameters() as $parameter) {
+                            if (!empty($parameter->getAttributes(RequestParam::class))) {
+                                $parameters[] = $parameter->name;
+                            } else {
+                                throw new InvalidArgumentException("Unannotated parameter {$parameter->name} on {$method}");
+                            }
+                        }
+                        $methods[] = new AnalyzedControllerMethod($method, $httpMethod, $attributeInstance->getUrl(), $parameters);
                     }
                 }
             }
