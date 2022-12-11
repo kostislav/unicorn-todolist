@@ -8,6 +8,7 @@ use Unicorn\Routing\POST;
 //use Unicorn\Routing\UrlParam;
 use Unicorn\Http\Response;
 use Unicorn\Routing\RequestParam;
+use Unicorn\Routing\UrlParam;
 
 class TodoListController {
     public function __construct(
@@ -35,13 +36,13 @@ class TodoListController {
 //            return $this->showForm($form->data);
 //        }
 //    }
-//
-//    #[POST('/{id}')]
-//    public function markComplete(#[UrlParam] int $id): Response {
-//        $this->todoListService->markComplete($id);
-//        return Response::redirect('index');
-//    }
-//
+
+    #[POST('/{id}')]
+    public function markComplete(#[UrlParam] int $id): Response {
+        $this->todoListService->markComplete($id);
+        return Response::redirect('index');
+    }
+
     private function showForm(TodoForm $form): Response {
         return Response::template('todo', [
             'form' => $form,

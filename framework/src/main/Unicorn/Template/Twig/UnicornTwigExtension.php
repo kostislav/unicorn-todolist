@@ -10,8 +10,8 @@ class UnicornTwigExtension extends AbstractExtension {
         return [
             new TwigFunction(
                 'action',
-                function (array $context, string $name) {
-                    return $context['_router']->findAction($context['_controllerComponentName'], $name);
+                function (array $context, string $name, array $args = []) {
+                    return $context['_router']->findAction($context['_controllerComponentName'], $name, $args);
                 },
                 [
                     'needs_context' => true

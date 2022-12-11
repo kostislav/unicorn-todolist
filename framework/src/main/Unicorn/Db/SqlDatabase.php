@@ -16,11 +16,7 @@ class SqlDatabase {
         if (empty($where)) {
             $statement = $this->pdo->prepare($query);
         } else {
-            $placeholders = [];
-            foreach ($where as $column => $value) {
-                $placeholders[] = '`' . $column . '` = :' . $column;
-            }
-            $query .= ' WHERE ' . implode(' AND ', $placeholders);
+            $query .= $this->buildWhere($where);
             $statement = $this->prepareAndBind($query, $where);
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -41,6 +37,17 @@ class SqlDatabase {
         return (int)$this->pdo->lastInsertId();
     }
 
+    public function updateSimple($table, $columns, $where): int {
+        $assignments = [];
+        foreach ($columns as $column => $value) {
+            $assignments[] = "`{$column}` = :{$column}";
+        }
+        $query = "UPDATE `{$table}` SET " . implode(', ', $assignments) . $this->buildWhere($where);
+        $statement = $this->prepareAndBind($query, $columns + $where);
+        $statement->execute();
+        return $statement->rowCount();
+    }
+
     private function prepareAndBind(string $query, array $params): PDOStatement {
         $statement = $this->pdo->prepare($query);
         foreach ($params as $name => $value) {
@@ -51,5 +58,13 @@ class SqlDatabase {
             }
         }
         return $statement;
+    }
+
+    private function buildWhere(array $where): string {
+        $placeholders = [];
+        foreach ($where as $column => $value) {
+            $placeholders[] = '`' . $column . '` = :' . $column;
+        }
+        return ' WHERE ' . implode(' AND ', $placeholders);
     }
 }

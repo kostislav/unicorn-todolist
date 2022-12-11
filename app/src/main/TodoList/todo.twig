@@ -8,6 +8,11 @@
         {% for item in items %}
             <div>
                 <p>{{ item.name }}</p>
+                <form action="{{ action('markComplete', {id: item.id}) }}" method="{{ action('markComplete', {id: item.id}).method }}">
+                    <div>
+                        <button type="submit">Mark Complete</button>
+                    </div>
+                </form>
             </div>
         {% endfor %}
         <form action="{{ action('add') }}" method="{{ action('add').method }}">

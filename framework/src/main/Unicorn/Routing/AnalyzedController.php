@@ -20,10 +20,12 @@ class AnalyzedController {
      */
     public function match(string $httpMethod, string $url): RouteMatch {
         foreach ($this->methods as $method) {
-            if ($method->matches($httpMethod, $url)) {
+            $capturedPathVariables = $method->matches($httpMethod, $url);
+            if ($capturedPathVariables !== null) {
                 return new RouteMatch(
                     $this->componentName,
                     $this->controllerDir,
+                    $capturedPathVariables,
                     $method
                 );
             }
@@ -31,10 +33,10 @@ class AnalyzedController {
         throw new NotFoundException();
     }
 
-    public function findUrl(string $methodName): ActionRoute {
+    public function findUrl(string $methodName, array $args): ActionRoute {
         foreach ($this->methods as $method) {
             if ($method->getName() == $methodName) {
-                return new ActionRoute($method->url, $method->httpMethod);
+                return $method->getUrl($args);
             }
         }
         throw new InvalidArgumentException("No method with name " . $methodName . ' in ' . $this->componentName);

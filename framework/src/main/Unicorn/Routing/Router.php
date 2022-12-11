@@ -31,7 +31,9 @@ class Router implements ReverseRouter {
                         $parameters = [];
                         foreach ($method->getParameters() as $parameter) {
                             if (!empty($parameter->getAttributes(RequestParam::class))) {
-                                $parameters[] = $parameter->name;
+                                $parameters[] = new RequestParamControllerMethodParameter($parameter->name);
+                            } else if (!empty($parameter->getAttributes(UrlParam::class))) {
+                                $parameters[] = new UrlParamControllerMethodParameter($parameter->name);
                             } else {
                                 throw new InvalidArgumentException("Unannotated parameter {$parameter->name} on {$method}");
                             }
@@ -58,10 +60,9 @@ class Router implements ReverseRouter {
      * @throws HttpException
      */
     public function handle(string $method, string $url): RouteMatch {
-        $url = self::appendSlashIfMissing($url);
         foreach ($this->routes as $baseUrl => $analyzedController) {
             if ($url == $baseUrl || str_starts_with($url, $baseUrl)) {
-                $restOfUrl = self::appendSlashIfMissing(substr($url, strlen($baseUrl)));
+                $restOfUrl = self::prependSlashIfMissing(substr($url, strlen($baseUrl)));
                 return $analyzedController->match($method, $restOfUrl);
             }
         }
@@ -76,10 +77,18 @@ class Router implements ReverseRouter {
         }
     }
 
-    public function findAction(string $controllerComponentName, string $actionName): ActionRoute {
+    private static function prependSlashIfMissing(string $input): string {
+        if ($input[0] == '/') {
+            return $input;
+        } else {
+            return '/' . $input;
+        }
+    }
+
+    public function findAction(string $controllerComponentName, string $actionName, array $args = []): ActionRoute {
         foreach ($this->routes as $baseUrl => $analyzedController) {
             if ($analyzedController->componentName == $controllerComponentName) {
-                return $analyzedController->findUrl($actionName)->prefixedWith($baseUrl);
+                return $analyzedController->findUrl($actionName, $args)->prefixedWith($baseUrl);
             }
         }
         throw new InvalidArgumentException("No route for {$controllerComponentName}.{$actionName}");
