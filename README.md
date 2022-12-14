@@ -12,7 +12,8 @@ What are the next steps? The declarative nature of the framework should allow ge
 
 The project is divided into the `app` and `framework` directories. They are separate Composer projects and the `app` project has a dev (symlink) dependency on the `framework` project. So, to run this thing:
 
-1) `composer install` in the `framework` directory
-2) `composer install` in the `app` directory
-3) Point your Apache web server at the `app/www` directory
-4) Write some To-Dos!
+1. `composer install` in the `framework` directory
+1. `composer install` in the `app` directory
+1. Update `app/config/database.yaml` with your DB settings
+1. Point your Apache web server at the `app/www` directory
+1. Write some To-Dos!
